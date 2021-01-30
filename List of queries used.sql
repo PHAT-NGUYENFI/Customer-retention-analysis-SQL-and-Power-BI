@@ -16,13 +16,13 @@ SELECT * FROM dbo.purchases;
 
 /*Number of unique User_ID and purchases_ID of purchases file*/
 SELECT	count(DISTINCT dbo.purchases.User_ID),
-		count(DISTINCT dbo.purchases.Purchase_ID)
+	count(DISTINCT dbo.purchases.Purchase_ID)
 FROM dbo.purchases;
 
 /* Check whether there is any duplicate (User_ID and Purchase_ID) in the purchases file*/
 SELECT	dbo.purchases.User_ID,
-		dbo.purchases.Purchase_ID,
-		COUNT(*)
+	dbo.purchases.Purchase_ID,
+	COUNT(*)
 FROM dbo.purchases
 GROUP BY dbo.purchases.User_ID, dbo.purchases.Purchase_ID
 HAVING COUNT(*) > 1;
@@ -30,30 +30,30 @@ HAVING COUNT(*) > 1;
 /*Unique User_ID appear in purchases file but not in first_purchases file*/
 SELECT DISTINCT dbo.purchases.User_ID
 FROM dbo.purchases
-WHERE dbo.purchases.User_ID NOT IN (SELECT dbo.first_purchases.User_ID
-									FROM dbo.first_purchases);
+WHERE dbo.purchases.User_ID NOT IN (	SELECT dbo.first_purchases.User_ID
+					FROM dbo.first_purchases);
 
 /*Records appear in purchases file, but not in first_purchases file*/
 SELECT * 
 FROM dbo.purchases
-WHERE dbo.purchases.User_ID NOT IN (SELECT dbo.first_purchases.User_ID
-									FROM dbo.first_purchases);
+WHERE dbo.purchases.User_ID NOT IN (	SELECT dbo.first_purchases.User_ID
+					FROM dbo.first_purchases);
 
 /*CUSTOMER RETENTION ANALYSIS - Restaurant line-Number of the customer in the end of every month and monthly number of customers acquired*/
 SELECT * 
 FROM
 	(
 	SELECT	DAY(dbo.purchases.Purchases_Time_Delivered) as MONTH,
-			COUNT(distinct dbo.purchases.User_ID) AS Number_of_customer_in_the_end_of_month
+		COUNT(distinct dbo.purchases.User_ID) AS Number_of_customer_in_the_end_of_month
 	FROM dbo.purchases
 	WHERE dbo.purchases.Product_line = 'Restaurant' AND dbo.purchases.User_ID IN (	SELECT dbo.first_purchases.User_ID
-																					FROM dbo.first_purchases)
+											FROM dbo.first_purchases)
 	GROUP BY DAY(dbo.purchases.Purchases_Time_Delivered)
 	) AS A
 JOIN
 (
-SELECT DAY(dbo.first_purchases.User_First_Purchase_Month) as MONTH,
-		COUNT(Distinct dbo.first_purchases.User_ID) AS New_acquired_customers
+SELECT 	DAY(dbo.first_purchases.User_First_Purchase_Month) as MONTH,
+	COUNT(Distinct dbo.first_purchases.User_ID) AS New_acquired_customers
 FROM dbo.first_purchases
 WHERE dbo.first_purchases.First_Purchase_Product_Line = 'Restaurant'
 GROUP BY DAY(dbo.first_purchases.User_First_Purchase_Month)
@@ -66,16 +66,16 @@ SELECT *
 FROM
 	(
 	SELECT	DAY(dbo.purchases.Purchases_Time_Delivered) as MONTH,
-			COUNT(distinct dbo.purchases.User_ID) AS Number_of_customer_in_the_end_of_month
+		COUNT(distinct dbo.purchases.User_ID) AS Number_of_customer_in_the_end_of_month
 	FROM dbo.purchases
 	WHERE dbo.purchases.Product_line = 'Retail store' AND dbo.purchases.User_ID IN (SELECT dbo.first_purchases.User_ID
-																					FROM dbo.first_purchases)
+											FROM dbo.first_purchases)
 	GROUP BY DAY(dbo.purchases.Purchases_Time_Delivered)
 	) AS A
 JOIN
 (
 SELECT	DAY(dbo.first_purchases.User_First_Purchase_Month) as MONTH,
-		COUNT(Distinct dbo.first_purchases.User_ID) AS New_acquired_customers
+	COUNT(Distinct dbo.first_purchases.User_ID) AS New_acquired_customers
 FROM dbo.first_purchases
 WHERE dbo.first_purchases.First_Purchase_Product_Line = 'Retail store'
 GROUP BY DAY(dbo.first_purchases.User_First_Purchase_Month)
@@ -101,7 +101,7 @@ FROM
 					FROM dbo.purchases
 					WHERE dbo.purchases.Product_line = 'Restaurant' AND
 					dbo.purchases.User_ID IN (	SELECT dbo.first_purchases.User_ID
-												FROM dbo.first_purchases)
+									FROM dbo.first_purchases)
 					) AS A
 		GROUP BY A.Purchases_Time_Delivered, A.Product_line, A.User_ID
 		) AS B
@@ -110,8 +110,8 @@ ORDER BY B.MONTH;
 
 /*REPEAT CUSTOMER RATE ANALYSIS - Restaurant line - Number of new users buy one order and more one order of the month*/
 SELECT	C.MONTH,
-		COUNT(C.number_of_customer_from_first_purchase_file_buy_one_order) AS Number_of_new_users_buy_one_order,
-		COUNT(C.number_of_customer_from_first_purchase_file_buy_MORE_one_order) AS Number_of_new_users_buy_MORE_one_order
+	COUNT(C.number_of_customer_from_first_purchase_file_buy_one_order) AS Number_of_new_users_buy_one_order,
+	COUNT(C.number_of_customer_from_first_purchase_file_buy_MORE_one_order) AS Number_of_new_users_buy_MORE_one_order
 FROM 
 	(
 	SELECT	B.MONTH,
@@ -128,7 +128,7 @@ FROM
 					SELECT * FROM dbo.purchases
 					WHERE dbo.purchases.Product_line = 'Restaurant' AND
 					dbo.purchases.User_ID IN (	SELECT dbo.first_purchases.User_ID
-												FROM dbo.first_purchases)
+									FROM dbo.first_purchases)
 					) AS A
 			GROUP BY A.Purchases_Time_Delivered, A.Product_line, A.User_ID
 			) AS B
@@ -159,7 +159,7 @@ FROM
 					FROM dbo.purchases
 					WHERE dbo.purchases.Product_line = 'Retail store' AND
 					dbo.purchases.User_ID IN (	SELECT dbo.first_purchases.User_ID
-												FROM dbo.first_purchases)
+									FROM dbo.first_purchases)
 					) AS A
 		GROUP BY A.Purchases_Time_Delivered, A.Product_line, A.User_ID
 		) AS B
@@ -186,7 +186,7 @@ FROM
 					SELECT * FROM dbo.purchases
 					WHERE dbo.purchases.Product_line = 'Retail store' AND
 					dbo.purchases.User_ID IN (	SELECT dbo.first_purchases.User_ID
-												FROM dbo.first_purchases)
+									FROM dbo.first_purchases)
 					) AS A
 			GROUP BY A.Purchases_Time_Delivered, A.Product_line, A.User_ID
 			) AS B
@@ -213,7 +213,7 @@ FROM
 	(
 	SELECT * FROM dbo.purchases
 	WHERE dbo.purchases.User_ID IN (SELECT dbo.first_purchases.User_ID
-									FROM dbo.first_purchases )) AS sub
+					FROM dbo.first_purchases )) AS sub
 GROUP BY sub.Product_line
 
 /*Problem of the dataset - Number of unique User_ID having both restaurant and retail stores product line*/
